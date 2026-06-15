@@ -8,4 +8,8 @@ const createUser = async (userData) => {
     return User.create(userData);
 };
 
-module.exports = { findUserByEmail, createUser };
+const findUserByEmailWithPassword = async (email) => {
+    return User.findOne({ email }).select("+password");
+};
+
+module.exports = { findUserByEmail, createUser, findUserByEmailWithPassword };
