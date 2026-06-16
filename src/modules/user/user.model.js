@@ -13,7 +13,7 @@ const userSchema = new mongoose.Schema(
             type: String,
             required: true,
             unique: true,
-            lowecase: true,
+            lowercase: true,
             trim: true
         },
         phone: {
@@ -35,7 +35,7 @@ const userSchema = new mongoose.Schema(
             enum: ['USER', 'ADMIN'],
             default: 'USER'
         },
-        isVerfied: {
+        isVerified: {
             type: Boolean,
             default: false
         }

@@ -1,4 +1,4 @@
-const { findUserByEmail, createUser } = require("./user.repository");
+const { findUserByEmail, createUser, findUserById } = require("./user.repository");
 
 const { findUserByEmailWithPassword } = require('./user.repository');
 
@@ -8,13 +8,18 @@ const generateToken = require('../../utils/generateToken');
 
 const hashPassword = require("../../utils/hashPassword");
 
+const ApiError = require('../../utils/ApiError')
+
 const registerUser = async (userData) => {
   const { email, password } = userData;
 
   const existingUser = await findUserByEmail(email);
 
   if (existingUser) {
-    throw new Error("User already exists");
+    throw new ApiError(
+      409,
+      "User already exists"
+    );
   }
 
   const hashedPassword = await hashPassword(password);
@@ -29,15 +34,20 @@ const registerUser = async (userData) => {
 
 const loginUser = async (loginData) => {
   const { email, password } = loginData;
-
   const user = await findUserByEmailWithPassword(email);
   if (!user) {
-    throw new Error('Invalid email or password');
+    throw new ApiError(
+      401,
+      'Invalid email or password'
+    );
   }
 
   const isPasswordValid = await comparePassword(password, user.password);
   if (!isPasswordValid) {
-    throw new Error("Invalid email or password");
+    throw new ApiError(
+      401,
+      "Invalid email or password"
+    );
   }
 
   const token = generateToken({
@@ -56,4 +66,24 @@ const loginUser = async (loginData) => {
   };
 };
 
-module.exports = { registerUser, loginUser };
+const getProfile = async (userId) => {
+  const user = await findUserById(userId);
+
+  if (!user) {
+    throw new ApiError(
+      404,
+      'User not found'
+    );
+  }
+
+  return {
+    id: user._id,
+    name: user.name,
+    email: user.email,
+    phone: user.phone,
+    role: user.role,
+    isVerified: user.isVerfied,
+  };
+};
+
+module.exports = { registerUser, loginUser, getProfile };

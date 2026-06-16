@@ -12,6 +12,8 @@ app.get('/', (req, res) => {
     res.send('E-Commerce Backend Running...');
 });
 
+const errorMiddleware = require('./middlewares/error.middleware');
+app.use(errorMiddleware);
 
 module.exports = app;
 

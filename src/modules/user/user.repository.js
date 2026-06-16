@@ -12,4 +12,8 @@ const findUserByEmailWithPassword = async (email) => {
     return User.findOne({ email }).select("+password");
 };
 
-module.exports = { findUserByEmail, createUser, findUserByEmailWithPassword };
+const findUserById = async(userId) => {
+    return User.findById(userId);
+};
+
+module.exports = { findUserByEmail, createUser, findUserByEmailWithPassword, findUserById };
