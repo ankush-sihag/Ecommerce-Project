@@ -16,4 +16,8 @@ const findUserById = async(userId) => {
     return User.findById(userId);
 };
 
-module.exports = { findUserByEmail, createUser, findUserByEmailWithPassword, findUserById };
+const findUserByIdWithPassword = async (userId) => {
+    return User.findById(userId).select('+password');
+};
+
+module.exports = { findUserByEmail, createUser, findUserByEmailWithPassword, findUserById, findUserByIdWithPassword };

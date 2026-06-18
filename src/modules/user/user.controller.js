@@ -1,7 +1,8 @@
 const { 
     registerUser: registerUserService,
     loginUser: loginUserService,
-    getProfile: getProfileService
+    getProfile: getProfileService,
+    changePassword: changePasswordService
 } = require('./user.service');
 
 const asyncHandler = require('../../utils/asyncHandler');
@@ -33,4 +34,16 @@ const getProfile = asyncHandler(async (req, res) => {
     });
 });
 
-module.exports = { registerUser, loginUser, getProfile };
+const changePassword = asyncHandler(async (req, res) => {
+    const result = await changePasswordService(
+        req.user.userId,
+        req.body
+    );
+
+    res.status(200).json({
+        success: true,
+        message: result.message,
+    });
+});
+
+module.exports = { registerUser, loginUser, getProfile, changePassword };

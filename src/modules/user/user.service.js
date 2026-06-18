@@ -1,4 +1,4 @@
-const { findUserByEmail, createUser, findUserById } = require("./user.repository");
+const { findUserByEmail, createUser, findUserById, findUserByIdWithPassword } = require("./user.repository");
 
 const { findUserByEmailWithPassword } = require('./user.repository');
 
@@ -8,7 +8,8 @@ const generateToken = require('../../utils/generateToken');
 
 const hashPassword = require("../../utils/hashPassword");
 
-const ApiError = require('../../utils/ApiError')
+const ApiError = require('../../utils/ApiError');
+const { findById } = require("./user.model");
 
 const registerUser = async (userData) => {
   const { email, password } = userData;
@@ -86,4 +87,34 @@ const getProfile = async (userId) => {
   };
 };
 
-module.exports = { registerUser, loginUser, getProfile };
+const changePassword = async ( userId,passwordData ) => {
+  const { oldPassword, newPassword } = passwordData;
+
+  if(oldPassword === newPassword) {
+    throw new ApiError(
+      400,
+      'New password must be diffrent from old password'
+    );
+  }
+
+  const user = await findUserByIdWithPassword(userId);
+  if (!user) {
+    throw new ApiError(404, 'User not found');
+  }
+
+  const isOldPasswordValid = await comparePassword(oldPassword, user.password);
+  if (!isOldPasswordValid) {
+    throw new ApiError(400, 'Old password is incorrect'); 
+  }
+
+  const hashedPassword = await hashPassword(newPassword);
+
+  user.password = hashedPassword;
+  await user.save();
+
+  return {
+    message: 'Password changed successfully',
+  };
+};
+
+module.exports = { registerUser, loginUser, getProfile, changePassword };
