@@ -1,15 +1,19 @@
-const { findUserByEmail, createUser, findUserById, findUserByIdWithPassword } = require("./user.repository");
+const { findUserByEmail, createUser, findUserById, findUserByIdWithPassword, findUserByResetToken } = require("./user.repository");
 
 const { findUserByEmailWithPassword } = require('./user.repository');
-
+const { findById } = require("./user.model");
 const comparePassword = require('../../utils/comparePassword');
 
 const generateToken = require('../../utils/generateToken');
 
 const hashPassword = require("../../utils/hashPassword");
 
+const generateResetToken = require('../../utils/generateResetToken');
+
+const hashResetToken = require('../../utils/hashResetToken');
+
 const ApiError = require('../../utils/ApiError');
-const { findById } = require("./user.model");
+
 
 const registerUser = async (userData) => {
   const { email, password } = userData;
@@ -117,4 +121,47 @@ const changePassword = async ( userId,passwordData ) => {
   };
 };
 
-module.exports = { registerUser, loginUser, getProfile, changePassword };
+const forgotPassword = async (email) => {
+  const user = await findUserByEmail(email);
+  if (!user) {
+    return { message: 'If aaccount exists, password reset instruction have been generated'};
+  }
+
+  const resetToken = generateResetToken();
+  const hashedToken = hashResetToken(resetToken);
+  user.passwordResetToken = hashedToken;
+  user.passwordResetExpires = new Date(Date.now() + 25 * 60 * 1000 );
+  await user.save();
+  return {
+    message: 'If aaccount exists, password reset instruction have been generated',
+    resetToken,
+  };
+};
+
+const resetPassword = async (token, newPassword) => {
+  const hashedToken = hashResetToken(token);
+  const user = await findUserByResetToken(hashedToken);
+  if(!user) {
+    throw new ApiError(400, 'Invalid reset token');
+  }
+
+  if (user.passwordResetExpires < new Date()) {
+    throw new ApiError(400, 'Reset token expired');
+  }
+
+  const isSamePassword = await comparePassword(newPassword, user.password);
+  if (isSamePassword) {
+    throw new ApiError(400, 'New password must be diffrent from current password');
+  }
+
+  const hashedPassword = await hashPassword(newPassword);
+  user.password = hashedPassword;
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
+  await user.save();
+  return {
+    message: 'Passwordreset successfully',
+  };
+};
+
+module.exports = { registerUser, loginUser, getProfile, changePassword, forgotPassword, resetPassword };

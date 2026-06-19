@@ -2,7 +2,9 @@ const {
     registerUser: registerUserService,
     loginUser: loginUserService,
     getProfile: getProfileService,
-    changePassword: changePasswordService
+    changePassword: changePasswordService,
+    forgotPassword: forgotPasswordService,
+    resetPassword: resetPasswordService
 } = require('./user.service');
 
 const asyncHandler = require('../../utils/asyncHandler');
@@ -46,4 +48,20 @@ const changePassword = asyncHandler(async (req, res) => {
     });
 });
 
-module.exports = { registerUser, loginUser, getProfile, changePassword };
+const forgotPassword = asyncHandler(async (req, res) => {
+    const result = await forgotPasswordService(req.body.email);
+    res.status(200).json({
+        success: true,
+        ...result,
+    });
+});
+
+const resetPassword = asyncHandler(async (req, res) => {
+    const result = await resetPasswordService(req.body.token, req.body.newPassword);
+    res.status(200).json({
+        success: true,
+        message: result.message,
+    });
+});
+
+module.exports = { registerUser, loginUser, getProfile, changePassword, forgotPassword, resetPassword };

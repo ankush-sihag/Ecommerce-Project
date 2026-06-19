@@ -20,4 +20,8 @@ const findUserByIdWithPassword = async (userId) => {
     return User.findById(userId).select('+password');
 };
 
-module.exports = { findUserByEmail, createUser, findUserByEmailWithPassword, findUserById, findUserByIdWithPassword };
+const findUserByResetToken = async (hashedToken) => {
+    return User.findOne({ passwordResetToken: hashedToken }).select('+password');
+};
+
+module.exports = { findUserByEmail, createUser, findUserByEmailWithPassword, findUserById, findUserByIdWithPassword, findUserByResetToken };
