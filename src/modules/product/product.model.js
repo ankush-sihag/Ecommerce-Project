@@ -42,7 +42,7 @@ const productSchema = new mongoose.Schema(
         ],
         variants: [
             {
-                colors: {
+                color: {
                     type: String,
                     required: true,
                 },
@@ -57,16 +57,18 @@ const productSchema = new mongoose.Schema(
                 price: {
                     type: Number,
                     required: true,
+                    min: 0,
                 },
                 stock: {
                     type: Number,
                     required: true,
+                    min: 0,
                     default: 0,
                 },
             },
         ],
         isActive: {
-            type: Boolian,
+            type: Boolean,
             default: true,
         },
     },
