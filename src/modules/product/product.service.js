@@ -63,6 +63,16 @@ const getAllProducts = async () => {
 };
 
 const getProductById = async (productId) => {
+    
+    // console.log("==============");
+    // console.log("PRODUCT ID:", productId);
+    // console.log("TYPE:", typeof productId);
+    // console.log(
+    //     "IS VALID:",
+    //     mongoose.Types.ObjectId.isValid(productId)
+    // );
+    // console.log("==============");
+    
     if (!mongoose.Types.ObjectId.isValid(productId)) {
         throw new ApiError(400, 'Invalid product id');
     }
@@ -74,7 +84,10 @@ const getProductById = async (productId) => {
 };
 
 const updateProduct = async (productId, updateData) => {
-    if (mongoose.Types.ObjectId.isValid(productId)) {
+    
+    // console.log("UPDATE ID:", productId);
+    
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
         throw new ApiError(400, 'Invalid product id');
     }
     const product = await findProductById(productId);
@@ -82,20 +95,10 @@ const updateProduct = async (productId, updateData) => {
         throw new ApiError(404, 'Product not found');
     }
     if (updateData.variants) {
-        for (
-            let i = 0;
-            i < updateData.variants.length;
-            i++
-        ) {
-            if (
-                updateData.variants[i].sku !== product.variants[i]?.sku
-            ) {
-                throw new ApiError(400, 'SKU cannot be updated');
-            };
-        }
+        throw new ApiError(400, 'SKU cannot be updated');
     }
     if (updateData.name) {
-        const slug = slugify(updateData.name);
+        const slug = slugify(updateData.name.trim());
         const existingProduct = await findProductBySlug(slug);
         if (existingProduct && existingProduct._id.toString() !== productId) {
             throw new ApiError(409, 'Product already exists');
@@ -128,7 +131,7 @@ const deleteProduct = async (productId) => {
 
 module.exports = {
     createProduct,
-     getAllProducts,
+    getAllProducts,
     getProductById,
     updateProduct,
     deleteProduct,

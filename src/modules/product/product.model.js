@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const { prependListener } = require('../category/category.model');
 
 const productSchema = new mongoose.Schema(
     {
@@ -42,6 +41,10 @@ const productSchema = new mongoose.Schema(
         ],
         variants: [
             {
+                _id : {
+                    type: Number,
+                    required: true,
+                },
                 color: {
                     type: String,
                     required: true,

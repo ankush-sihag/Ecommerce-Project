@@ -2,6 +2,10 @@ const asyncHandler = require('../../utils/asyncHandler');
 
 const {
     createProduct: createProductService,
+    getAllProducts: getAllProductsService,
+    getProductById: getProductByIdService,
+    updateProduct: updateProductService,
+    deleteProduct: deleteProductService,
 } = require('./product.service');
 
 const createProduct = asyncHandler(async (req, res) => {

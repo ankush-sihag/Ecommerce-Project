@@ -5,12 +5,15 @@ const router = express.Router();
 const {
     createProduct,
     getAllProducts,
+    getProductById,
+    updateProduct,
+    deleteProduct,
 } = require('./product.controller');
 
 const authMiddleware = require('../../middlewares/auth.middleware');
 
 const authorize = require('../../middlewares/role.middleware');
-const { getProductById, deleteProduct, updateProduct } = require('./product.service');
+
 
 router.post('/', authMiddleware, authorize('admin'), createProduct);
 
