@@ -6,6 +6,8 @@ const categoryRoutes = require('./modules/category/category.routes');
 
 const productRoutes = require('./modules/product/product.routes');
 
+const cartRoutes = require("./modules/cart/cart.routes");
+
 const app = express();
 
 app.use(express.json());
@@ -15,6 +17,8 @@ app.use('/api/users', userRoutes);
 app.use('/api/categories', categoryRoutes);
 
 app.use('/api/products', productRoutes);
+
+app.use('/api/cart', cartRoutes);
 
 app.get('/', (req, res) => {
     res.send('E-Commerce Backend Running...');
