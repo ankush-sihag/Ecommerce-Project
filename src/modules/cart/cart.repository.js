@@ -4,6 +4,14 @@ const findCartByUserId = async (userId) => {
   return Cart.findOne({ user: userId });
 };
 
+const findCartWithProducts = async (userId) => {
+  return Cart.findOne({ user: userId })
+      .populate(
+          'cartItems.product',
+          'name slug images variants isActive'
+      );
+};
+
 const createCart = async (cartData) => {
     return Cart.create(cartData);
 };
@@ -18,6 +26,7 @@ const deleteCartById = async (cartId) => {
 
 module.exports = {
     findCartByUserId,
+    findCartWithProducts,
     createCart,
     saveCart,
     deleteCartById,
